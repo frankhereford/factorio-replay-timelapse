@@ -552,6 +552,14 @@ function run()
     watch(event.tick)
   end
 
+  -- This is my attempt at running a function when you first load the replay save.
+  script.on_event(
+    defines.events.on_player_joined_game,
+    function (event)
+      game.surfaces[1].show_clouds = false -- Disables Clouds
+    end
+  )
+
   script.on_nth_tick(nth_tick, watch_base)
 
   script.on_event(
