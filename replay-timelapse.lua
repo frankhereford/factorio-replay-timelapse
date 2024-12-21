@@ -207,17 +207,28 @@ function bbox_union_flattened(bboxess)
 end
 
 -- Compute the smallest bounding box covering all of the player's buildings.
+local previous_bbox = nil
+
 function base_bbox()
   local entities = game.surfaces[1].find_entities_filtered{force = "player"}
   local result = {}
+  local has_buildings = false
+
   for _, entity in ipairs(entities) do
     if entity.type ~= "character" and entity.type ~= "car" and entity.name ~= "crash-site-spaceship" then
       result = expand_bbox(entity_bbox(entity), result)
+      has_buildings = true
     end
   end
+
+  if has_buildings then
+    previous_bbox = result
+  elseif previous_bbox then
+    result = previous_bbox
+  end
+
   return result
 end
-
 -- Compute a camera view centered on and zoomed out (as far as allowed) to cover a bounding box.
 function compute_camera(bbox)
   local center = { x = (bbox.l + bbox.r) / 2, y = (bbox.t + bbox.b) / 2 }
