@@ -1,23 +1,4 @@
 {
-  "workbench.colorCustomizations": {
-    "activityBar.activeBackground": "#241b7c",
-    "activityBar.background": "#241b7c",
-    "activityBar.foreground": "#e7e7e7",
-    "activityBar.inactiveForeground": "#e7e7e799",
-    "activityBarBadge.background": "#b73528",
-    "activityBarBadge.foreground": "#e7e7e7",
-    "commandCenter.border": "#e7e7e799",
-    "sash.hoverBorder": "#241b7c",
-    "statusBar.background": "#181252",
-    "statusBar.foreground": "#e7e7e7",
-    "statusBarItem.hoverBackground": "#241b7c",
-    "statusBarItem.remoteBackground": "#181252",
-    "statusBarItem.remoteForeground": "#e7e7e7",
-    "titleBar.activeBackground": "#181252",
-    "titleBar.activeForeground": "#e7e7e7",
-    "titleBar.inactiveBackground": "#18125299",
-    "titleBar.inactiveForeground": "#e7e7e799"
-  },
   "peacock.color": "#181252",
   "cSpell.words": [
     "Factorio",
