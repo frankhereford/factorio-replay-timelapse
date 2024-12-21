@@ -1,0 +1,13 @@
+services:
+  flask:
+    build: file_service
+    container_name: web
+    environment:
+      - FLASK_ENV=development
+      - FLASK_DEBUG=1
+      - SERVICE_DIRECTORY=/app/static
+    ports:
+      - "9000:5000"
+    volumes:
+      - /mnt/ceph/media/factorio/chunk-screenshots:/app/static:ro
+      - ./file_service:/app
