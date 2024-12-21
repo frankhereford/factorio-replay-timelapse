@@ -18,5 +18,9 @@
     "titleBar.inactiveBackground": "#18125299",
     "titleBar.inactiveForeground": "#e7e7e799"
   },
-  "peacock.color": "#181252"
+  "peacock.color": "#181252",
+  "cSpell.words": [
+    "Factorio",
+    "Timelapse"
+  ]
 }
