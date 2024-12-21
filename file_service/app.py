@@ -9,6 +9,9 @@ logging.basicConfig(level=logging.DEBUG)
 
 app = Flask(__name__)
 
+
+
+
 @app.route('/images/', defaults={'subpath': ''})
 @app.route('/images/<path:subpath>')
 def serve_path(subpath):
