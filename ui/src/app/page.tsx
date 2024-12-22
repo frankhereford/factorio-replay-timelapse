@@ -7,44 +7,22 @@ import Map from '~/components/Map';
 import Button from '~/components/Button';
 
 import styles from '../styles/Home.module.scss';
-const DEFAULT_CENTER = [38.907132, -77.036546]
-
-
+const DEFAULT_CENTER = [0,0]
 
 export default function HomePage() {
-  
   return (
-    <div style={{
-      height: '100vh',
-      width: '100vw',
-      display: 'flex',
-      justifyContent: 'center',
-      alignItems: 'center'
-    }}>
-      <div style={{
-        height: '80vh',
-        width: '80vw',
-        border: '1px solid black'
-      }}>
-      
-          <Map className={styles.homeMap}  center={DEFAULT_CENTER} zoom={12}>
-            {({ TileLayer, Marker, Popup }) => (
-              <>
-                <TileLayer
-                  url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                  attribution="&copy; <a href=&quot;http://osm.org/copyright&quot;>OpenStreetMap</a> contributors"
-                />
-                <Marker position={DEFAULT_CENTER}>
-                  <Popup>
-                    A pretty CSS3 popup. <br /> Easily customizable.
-                  </Popup>
-                </Marker>
-              </>
-            )}
-          </Map>
-        
-
-      </div>
+    <div className={styles.mapContainer}>
+      <Map className={styles.homeMap} center={DEFAULT_CENTER} zoom={10} minZoom={7} maxZoom={13}>
+        {({ TileLayer, Marker, Popup }: { TileLayer: any; Marker: any; Popup: any }) => (
+          <>
+            <TileLayer
+              url="http://fjord:9000/30000/{z}/{x}/{y}.png"
+              tileSize={1024}
+            />
+            <Marker position={DEFAULT_CENTER} />
+          </>
+        )}
+      </Map>
     </div>
   );
 }
