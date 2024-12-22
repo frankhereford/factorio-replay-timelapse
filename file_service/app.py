@@ -87,7 +87,7 @@ def generate_still_tile(tick, zoom, x, y):
     cache_key = f'{label}:{tick}:{zoom}:{x}:{y}'
     cached_image = redis_client.get(cache_key)
 
-    base_zoom = 8
+    base_zoom = 7
 
     if cached_image:
         logging.debug(f'Cache hit 🎉 for key: {cache_key}')
@@ -125,6 +125,13 @@ def generate_still_tile(tick, zoom, x, y):
             # Resize the stitched image to 256x256
             img = stitched_image.resize((256, 256))
             logging.debug('Image resized to 256x256')
+
+            # Store the image in cache
+            buffer = io.BytesIO()
+            img.save(buffer, format='PNG')
+            buffer.seek(0)
+            encoded_image = base64.b64encode(buffer.getvalue()).decode('utf-8')
+            redis_client.set(cache_key, encoded_image)
         else:
             # Calculate the grid size and center coordinate
             grid_size = 2 ** zoom
@@ -181,12 +188,29 @@ def generate_still_tile(tick, zoom, x, y):
             else:
                 raise ValueError(f'Unsupported zoom level: {zoom}')
 
+    # Create a grid of dark and light grey boxes
+    grid_image = Image.new('RGBA', (256, 256), (0, 0, 0, 0))
+    draw = ImageDraw.Draw(grid_image)
+    box_size = 128
+    for i in range(0, 256, box_size):
+        for j in range(0, 256, box_size):
+            color = (169, 169, 169) if (i // box_size + j // box_size) % 2 == 0 else (211, 211, 211)
+            draw.rectangle([i, j, i + box_size, j + box_size], fill=color)
+    
+    # Composite the generated image onto the grid
+    grid_image.paste(img, (0, 0), img)
+    
     # Save the image to a bytes buffer
     buffer = io.BytesIO()
-    img.save(buffer, format='PNG')
+    grid_image.save(buffer, format='PNG')
     buffer.seek(0)
+    
+    # Store the image in cache
+    encoded_image = base64.b64encode(buffer.getvalue()).decode('utf-8')
+    redis_client.set(cache_key, encoded_image)
+    
     return buffer
-
+    
 @app.route('/stills/<int:tick>/<int:zoom>/<int:x>/<int:y>.png')
 def still_tile(tick, zoom, x, y):
     label = 'stills'
