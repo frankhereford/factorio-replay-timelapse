@@ -87,7 +87,7 @@ def generate_still_tile(tick, zoom, x, y):
     cache_key = f'{label}:{tick}:{zoom}:{x}:{y}'
     cached_image = redis_client.get(cache_key)
 
-    base_zoom = 7
+    base_zoom = 6
 
     if cached_image:
         logging.debug(f'Cache hit 🎉 for key: {cache_key}')
@@ -95,7 +95,16 @@ def generate_still_tile(tick, zoom, x, y):
         return buffer
     else:
         logging.debug(f'Cache miss ❌ for key: {cache_key}')
-        if zoom < base_zoom:
+        if zoom > (base_zoom + 2):
+            logging.debug(f'Zoom level: {zoom} is greater than base_zoom + 2, returning black 256x256 PNG buffer')
+            # Create a black 256x256 PNG image
+            img = Image.new('RGB', (256, 256), color='black')
+            buf = io.BytesIO()
+            img.save(buf, format='PNG')
+            buf.seek(0)
+            return buf
+
+        elif zoom < base_zoom:
             logging.debug(f'Zoom level: {zoom}, Coordinates: ({x}, {y})')
             # Calculate the coordinates for the four tiles at the next zoom level
             next_zoom = zoom + 1
