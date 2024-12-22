@@ -16,6 +16,7 @@ app = Flask(__name__)
 def serve_path(subpath):
     base_dir = os.environ.get('SERVICE_DIRECTORY', '.')
     full_path = safe_join(base_dir, subpath)
+    #logging.debug(f"Request for: {subpath}")
 
     if os.path.isdir(full_path):
             
