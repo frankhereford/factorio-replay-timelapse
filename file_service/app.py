@@ -1,5 +1,5 @@
 from flask import Flask, send_file, make_response
-from PIL import Image, ImageDraw, ImageFont
+from PIL import Image, ImageDraw, ImageFont, ImageFilter
 import io
 import redis
 import base64
@@ -24,11 +24,29 @@ def generate_debug_tile(label, zoom, x, y):
     draw.rectangle([0, 0, 255, 255], outline=border_color, width=3)
 
     # Add text to the image
-    text = f'{label}: Zoom: {zoom}, X: {x}, Y: {y}'
-    font = ImageFont.load_default()
+    text = f'Z: {zoom}, X: {x}, Y: {y}'
+    font_path = '/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf'
+    font_size = 20  # Adjust the font size as needed
+    font = ImageFont.truetype(font_path, font_size)
     text_bbox = draw.textbbox((0, 0), text, font=font)
     text_width, text_height = text_bbox[2] - text_bbox[0], text_bbox[3] - text_bbox[1]
-    text_position = ((256 - text_width) // 2, (256 - text_height) // 2)
+    text_position = (20, 20)
+
+    # Create a layer for the white text
+    text_layer = Image.new('RGBA', img.size, (0, 0, 0, 0))
+    text_draw = ImageDraw.Draw(text_layer)
+
+    # Draw the white text multiple times with slight offsets to make it bolder
+    offsets = [(-2, -2), (-2, 2), (2, -2), (2, 2), (0, 0)]
+    for offset in offsets:
+        text_draw.text((text_position[0] + offset[0], text_position[1] + offset[1]), text, fill=(255, 255, 255, 255), font=font)
+
+    # Blur the white text layer with a tighter radius
+    blurred_text_layer = text_layer.filter(ImageFilter.GaussianBlur(1))
+
+    # Composite the blurred white text layer under the black text
+    img = Image.alpha_composite(img, blurred_text_layer)
+    draw = ImageDraw.Draw(img)
     draw.text(text_position, text, fill=(0, 0, 0, 255), font=font)
 
     # Save the image to a bytes buffer
@@ -36,6 +54,7 @@ def generate_debug_tile(label, zoom, x, y):
     img.save(buffer, format='PNG')
     buffer.seek(0)
     return buffer
+
 
 @app.before_request
 def clear_cache():
