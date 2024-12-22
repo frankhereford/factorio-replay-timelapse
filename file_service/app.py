@@ -7,19 +7,28 @@ import logging
 
 logging.basicConfig(level=logging.DEBUG)
 
+available_file_data = 6
+
 app = Flask(__name__)
-
-
 
 @app.route('/', defaults={'subpath': ''})
 @app.route('/<path:subpath>')
 def serve_path(subpath):
     base_dir = os.environ.get('SERVICE_DIRECTORY', '.')
     full_path = safe_join(base_dir, subpath)
-    #logging.debug(f"Request for: {subpath}")
+    # Extract zoom level from the URL
+    zoom_level = extract_zoom_level(subpath)
+    logging.debug(f"Zoom level: {zoom_level}")
+
+    if zoom_level != available_file_data:
+        parts = subpath.split('/')
+        if len(parts) > 1:
+            parts[0] = str(available_file_data)
+            new_subpath = '/'.join(parts)
+            full_path = safe_join(base_dir, new_subpath)
+            logging.debug(f"Overloaded full path: {full_path}")
 
     if os.path.isdir(full_path):
-            
         items_raw = os.listdir(full_path)
         logging.debug(f"Raw directory listing for {full_path}: {items_raw}")
     
@@ -56,6 +65,16 @@ def thumbnail(subpath):
     logging.debug(f"subpath: {subpath}")
     full_path = safe_join(base_dir, subpath)
     logging.debug(f"Thumbnail request for: {full_path}")
+    zoom_level = extract_zoom_level(subpath)
+    logging.debug(f"Zoom level: {zoom_level}")
+
+    if zoom_level != available_file_data:
+        parts = subpath.split('/')
+        if len(parts) > 1:
+            parts[0] = str(available_file_data)
+            new_subpath = '/'.join(parts)
+            full_path = safe_join(base_dir, new_subpath)
+            logging.debug(f"Overloaded full path: {full_path}")
 
     try:
         with Image.open(full_path) as img:
@@ -70,6 +89,11 @@ def thumbnail(subpath):
         logging.error(f"Error creating thumbnail for {full_path}: {e}")
         return "Thumbnail Error", 404
 
+def extract_zoom_level(subpath):
+    parts = subpath.split('/')
+    if len(parts) > 1 and parts[0].isdigit():
+        return int(parts[0])
+    return None
 
 if __name__ == "__main__":
     app.run(debug=True)
