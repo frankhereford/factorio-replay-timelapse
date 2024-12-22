@@ -1,99 +1,65 @@
-import os
-from flask import Flask, request, send_file, render_template_string
-from werkzeug.utils import safe_join
-from PIL import Image
-from io import BytesIO
+from flask import Flask, send_file, make_response
+from PIL import Image, ImageDraw, ImageFont
+import io
+import redis
+import base64
 import logging
-
-logging.basicConfig(level=logging.DEBUG)
-
-available_file_data = 6
 
 app = Flask(__name__)
 
-@app.route('/', defaults={'subpath': ''})
-@app.route('/<path:subpath>')
-def serve_path(subpath):
-    base_dir = os.environ.get('SERVICE_DIRECTORY', '.')
-    full_path = safe_join(base_dir, subpath)
-    # Extract zoom level from the URL
-    zoom_level = extract_zoom_level(subpath)
-    logging.debug(f"Zoom level: {zoom_level}")
+# Configure logging
+logging.basicConfig(level=logging.DEBUG)
 
-    if zoom_level != available_file_data:
-        parts = subpath.split('/')
-        if len(parts) > 1:
-            parts[0] = str(available_file_data)
-            new_subpath = '/'.join(parts)
-            full_path = safe_join(base_dir, new_subpath)
-            logging.debug(f"Overloaded full path: {full_path}")
+# Connect to Redis
+redis_client = redis.Redis(host='redis', port=6379)
 
-    if os.path.isdir(full_path):
-        items_raw = os.listdir(full_path)
-        logging.debug(f"Raw directory listing for {full_path}: {items_raw}")
+def generate_tile(label, zoom, x, y):
+    # Create a 256x256 transparent image
+    img = Image.new('RGBA', (256, 256), (0, 0, 0, 0))
+    draw = ImageDraw.Draw(img)
+
+    # Draw a 3px 50% clear border
+    border_color = (0, 0, 0, 128)
+    draw.rectangle([0, 0, 255, 255], outline=border_color, width=3)
+
+    # Add text to the image
+    text = f'{label}: Zoom: {zoom}, X: {x}, Y: {y}'
+    font = ImageFont.load_default()
+    text_bbox = draw.textbbox((0, 0), text, font=font)
+    text_width, text_height = text_bbox[2] - text_bbox[0], text_bbox[3] - text_bbox[1]
+    text_position = ((256 - text_width) // 2, (256 - text_height) // 2)
+    draw.text(text_position, text, fill=(0, 0, 0, 255), font=font)
+
+    # Save the image to a bytes buffer
+    buffer = io.BytesIO()
+    img.save(buffer, format='PNG')
+    buffer.seek(0)
+    return buffer
+
+@app.before_request
+def clear_cache():
+    # The following line will remove this handler, making it
+    # only run on the first request
+    app.before_request_funcs[None].remove(clear_cache)
+    redis_client.flushall()
     
-        items = sorted(os.listdir(full_path), key=lambda x: (not os.path.isdir(os.path.join(full_path, x)), int(x) if x.lstrip('-').isdigit() else x))
-        logging.debug(f"Directory listing for {full_path}: {items}")
-        
-        links = []
-        for item in items:
-            item_path = os.path.join(subpath, item)
-            if os.path.isdir(os.path.join(full_path, item)):
-                links.append(f'<li><a href="/{item_path}">{item}/</a></li>')
-            else:
-                # Only show PNG images
-                if item.lower().endswith('.png'):
-                    links.append(
-                        f'<li><a href="/{item_path}">'
-                        f'<img src="/thumb/{item_path}" alt="{item}" style="height:50px;"> '
-                        f'{item}</a></li>'
-                    )
-        template = f'''
-        <h1>Index of /{subpath}</h1>
-        <ul>
-            {''.join(links)}
-        </ul>
-        '''
-        return render_template_string(template)
+    logging.debug('Cache cleared 🗑️')
+
+@app.route('/debug/<int:zoom>/<int:x>/<int:y>.png')
+def debug_tile(zoom, x, y):
+    label = 'debug'
+    cache_key = f'{label}:{zoom}:{x}:{y}'
+    cached_image = redis_client.get(cache_key)
+
+    if cached_image:
+        logging.debug(f'Cache hit 🎉 for key: {cache_key}')
+        buffer = io.BytesIO(base64.b64decode(cached_image))
     else:
-        return send_file(full_path)
+        logging.debug(f'Cache miss ❌ for key: {cache_key}')
+        buffer = generate_tile(label, zoom, x, y)
+        redis_client.set(cache_key, base64.b64encode(buffer.getvalue()))
 
-@app.route('/thumb/<path:subpath>')
-def thumbnail(subpath):
-    base_dir = os.environ.get('SERVICE_DIRECTORY', '.')
-    logging.debug(f"base_dir: {base_dir}")
-    logging.debug(f"subpath: {subpath}")
-    full_path = safe_join(base_dir, subpath)
-    logging.debug(f"Thumbnail request for: {full_path}")
-    zoom_level = extract_zoom_level(subpath)
-    logging.debug(f"Zoom level: {zoom_level}")
+    return send_file(buffer, mimetype='image/png')
 
-    if zoom_level != available_file_data:
-        parts = subpath.split('/')
-        if len(parts) > 1:
-            parts[0] = str(available_file_data)
-            new_subpath = '/'.join(parts)
-            full_path = safe_join(base_dir, new_subpath)
-            logging.debug(f"Overloaded full path: {full_path}")
-
-    try:
-        with Image.open(full_path) as img:
-            img.thumbnail((100, 100))
-            if img.mode == 'RGBA':
-                img = img.convert('RGB')
-            buf = BytesIO()
-            img.save(buf, format='JPEG')
-            buf.seek(0)
-            return send_file(buf, mimetype='image/jpeg')
-    except Exception as e:
-        logging.error(f"Error creating thumbnail for {full_path}: {e}")
-        return "Thumbnail Error", 404
-
-def extract_zoom_level(subpath):
-    parts = subpath.split('/')
-    if len(parts) > 1 and parts[0].isdigit():
-        return int(parts[0])
-    return None
-
-if __name__ == "__main__":
+if __name__ == '__main__':
     app.run(debug=True)
