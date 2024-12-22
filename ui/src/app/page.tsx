@@ -7,17 +7,22 @@ import Map from '~/components/Map';
 import Button from '~/components/Button';
 
 import styles from '../styles/Home.module.scss';
+
 const DEFAULT_CENTER = [0,0]
 
 export default function HomePage() {
   return (
     <div className={styles.mapContainer}>
-      <Map className={styles.homeMap} center={DEFAULT_CENTER} zoom={10} minZoom={7} maxZoom={13}>
+      <Map className={styles.homeMap} center={DEFAULT_CENTER} zoom={6} minZoom={3} maxZoom={8}>
         {({ TileLayer, Marker, Popup }: { TileLayer: any; Marker: any; Popup: any }) => (
           <>
             <TileLayer
-              url="http://fjord:9000/30000/{z}/{x}/{y}.png"
-              tileSize={1024}
+              url="http://fjord:9000/stills/1050000/{z}/{x}/{y}.png"
+              tileSize={256}
+            />
+            <TileLayer
+              url="http://fjord:9000/debug/{z}/{x}/{y}.png"
+              tileSize={256}
             />
             <Marker position={DEFAULT_CENTER} />
           </>
