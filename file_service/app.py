@@ -67,8 +67,10 @@ def generate_still_tile(tick, zoom, x, y):
     source_dir = f'/app/static/{tick}'
     if zoom == 6:
         source_image_path = os.path.join(source_dir, f'{x}/{y}.png')
-    else:
+    elif zoom == 7:
         source_image_path = os.path.join(source_dir, f'{x // 2}/{y // 2}.png')
+    elif zoom == 8:
+        source_image_path = os.path.join(source_dir, f'{x // 4}/{y // 4}.png')
 
     # Debugging: Check if the file exists
     if not os.path.exists(source_image_path):
@@ -78,7 +80,15 @@ def generate_still_tile(tick, zoom, x, y):
     # Open the source image
     source_image = Image.open(source_image_path)
 
-    if zoom == 7:
+    if zoom == 8:
+        # Calculate the box to crop the image for zoom level 8
+        left = (x % 4) * 256
+        upper = (y % 4) * 256
+        right = left + 256
+        lower = upper + 256
+        img = source_image.crop((left, upper, right, lower))
+        # img = source_image.resize((256, 256))
+    elif zoom == 7:
         # Calculate the box to crop the image for zoom level 7
         left = (x % 2) * 512
         upper = (y % 2) * 512
