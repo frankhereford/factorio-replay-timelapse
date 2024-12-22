@@ -63,14 +63,25 @@ def debug_tile(zoom, x, y):
     return send_file(buffer, mimetype='image/png')
 
 def generate_still_tile(tick, zoom, x, y):
+    # Calculate the grid size and center coordinate
+    grid_size = 2 ** zoom
+    center_x = grid_size // 2
+    center_y = grid_size // 2
+    logging.debug(f'Grid size: {grid_size}x{grid_size}, Center coordinate: ({center_x}, {center_y})')
+
+    # Transform the incoming coordinates
+    transformed_x = x - center_x
+    transformed_y = y - center_y
+    logging.debug(f'Transformed coordinates: ({transformed_x}, {transformed_y})')
+
     # Determine the source image path
     source_dir = f'/app/static/{tick}'
     if zoom == 6:
-        source_image_path = os.path.join(source_dir, f'{x}/{y}.png')
+        source_image_path = os.path.join(source_dir, f'{transformed_x}/{transformed_y}.png')
     elif zoom == 7:
-        source_image_path = os.path.join(source_dir, f'{x // 2}/{y // 2}.png')
+        source_image_path = os.path.join(source_dir, f'{transformed_x // 2}/{transformed_y // 2}.png')
     elif zoom == 8:
-        source_image_path = os.path.join(source_dir, f'{x // 4}/{y // 4}.png')
+        source_image_path = os.path.join(source_dir, f'{transformed_x // 4}/{transformed_y // 4}.png')
 
     # Debugging: Check if the file exists
     if not os.path.exists(source_image_path):
@@ -82,16 +93,15 @@ def generate_still_tile(tick, zoom, x, y):
 
     if zoom == 8:
         # Calculate the box to crop the image for zoom level 8
-        left = (x % 4) * 256
-        upper = (y % 4) * 256
+        left = (transformed_x % 4) * 256
+        upper = (transformed_y % 4) * 256
         right = left + 256
         lower = upper + 256
         img = source_image.crop((left, upper, right, lower))
-        # img = source_image.resize((256, 256))
     elif zoom == 7:
         # Calculate the box to crop the image for zoom level 7
-        left = (x % 2) * 512
-        upper = (y % 2) * 512
+        left = (transformed_x % 2) * 512
+        upper = (transformed_y % 2) * 512
         right = left + 512
         lower = upper + 512
         source_image = source_image.crop((left, upper, right, lower))
