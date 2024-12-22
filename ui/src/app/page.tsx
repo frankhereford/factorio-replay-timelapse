@@ -13,11 +13,11 @@ const DEFAULT_CENTER = [0,0]
 export default function HomePage() {
   return (
     <div className={styles.mapContainer}>
-      <Map className={styles.homeMap} center={DEFAULT_CENTER} zoom={6} minZoom={3} maxZoom={8}>
+      <Map className={styles.homeMap} center={DEFAULT_CENTER} zoom={6} minZoom={0} maxZoom={10}>
         {({ TileLayer, Marker, Popup }: { TileLayer: any; Marker: any; Popup: any }) => (
           <>
             <TileLayer
-              url="http://fjord:9000/stills/1050000/{z}/{x}/{y}.png"
+              url="http://fjord:9000/stills/1200000/{z}/{x}/{y}.png"
               tileSize={256}
             />
             <TileLayer
