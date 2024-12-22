@@ -5,6 +5,7 @@ import redis
 import base64
 import logging
 import os
+import numpy as np
 
 app = Flask(__name__)
 
@@ -86,7 +87,7 @@ def generate_still_tile(tick, zoom, x, y):
     cache_key = f'{label}:{tick}:{zoom}:{x}:{y}'
     cached_image = redis_client.get(cache_key)
 
-    base_zoom = 7
+    base_zoom = 8
 
     if cached_image:
         logging.debug(f'Cache hit 🎉 for key: {cache_key}')
