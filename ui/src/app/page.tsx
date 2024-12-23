@@ -1,68 +1,27 @@
-'use client';
+import Link from "next/link";
 
-import React, { useState } from 'react';
-import Layout from '~/components/Layout';
-import Section from '~/components/Section';
-import Container from '~/components/Container';
-import Map from '~/components/Map';
-import Button from '~/components/Button';
+import { LatestPost } from "~/app/_components/post";
+import { api, HydrateClient } from "~/trpc/server";
+import Map from "~/app/_components/map";
 
-import styles from '../styles/Home.module.scss';
+export default async function Home() {
+  const hello = await api.post.hello({ text: "from tRPC" });
 
-const DEFAULT_CENTER = [0,0];
-
-const jump = 15000;
-const end = 1200000;
-
-export default function HomePage() {
-  const [selectedValue, setSelectedValue] = useState(0);
-
-  const handleDropdownChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    setSelectedValue(Number(event.target.value));
-  };
-
-  const handleIncrement = () => {
-    setSelectedValue(prev => Math.min(prev + jump, end));
-  };
-
-  const handleDecrement = () => {
-    setSelectedValue(prev => Math.max(prev - jump, 0));
-  };
-
-  const dropdownValues = Array.from({ length: 82 }, (_, i) => i * jump);
+  void api.post.getLatest.prefetch();
 
   return (
-    <div className={styles.mapContainer}>
-      <div className={styles.dropdownContainer}>
-        <button onClick={handleDecrement} disabled={selectedValue === 0}>
-          &uarr;
-        </button>
-        <select onChange={handleDropdownChange} value={selectedValue}>
-          {dropdownValues.map(value => (
-            <option key={value} value={value}>
-              n = {value}
-            </option>
-          ))}
-        </select>
-        <button onClick={handleIncrement} disabled={selectedValue === end}>
-          &darr;
-        </button>
-      </div>
-      <Map className={styles.homeMap} center={DEFAULT_CENTER} zoom={6} minZoom={0} maxZoom={14}>
-        {({ TileLayer, Marker, Popup }: { TileLayer: any; Marker: any; Popup: any }) => (
-          <>
-            <TileLayer
-              url={`http://fjord:8123/stills/${selectedValue}/{z}/{x}/{y}.png`}
-              tileSize={256}
-            />
-            {/* <TileLayer
-              url="http://fjord:9000/debug/{z}/{x}/{y}.png"
-              tileSize={256}
-            /> */}
-            <Marker position={DEFAULT_CENTER} />
-          </>
-        )}
-      </Map>
-    </div>
+    <HydrateClient>
+      <main>
+          <Map></Map>
+     </main>
+    </HydrateClient>
   );
 }
+
+          // <div className="flex flex-col items-center gap-2">
+          //   <p className="text-2xl text-white">
+          //     {hello ? hello.greeting : "Loading tRPC query..."}
+          //   </p>
+          // </div>
+          // <LatestPost />
+ 
