@@ -1,5 +1,6 @@
 'use client';
 
+import React, { useState } from 'react';
 import Layout from '~/components/Layout';
 import Section from '~/components/Section';
 import Container from '~/components/Container';
@@ -8,22 +9,39 @@ import Button from '~/components/Button';
 
 import styles from '../styles/Home.module.scss';
 
-const DEFAULT_CENTER = [0,0]
+const DEFAULT_CENTER = [0,0];
 
 export default function HomePage() {
+  const [selectedValue, setSelectedValue] = useState(0);
+
+  const handleDropdownChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    setSelectedValue(Number(event.target.value));
+  };
+
+  const dropdownValues = Array.from({ length: 41 }, (_, i) => i * 30000);
+
   return (
     <div className={styles.mapContainer}>
-      <Map className={styles.homeMap} center={DEFAULT_CENTER} zoom={6} minZoom={0} maxZoom={10}>
+      <div className={styles.dropdownContainer}>
+        <select onChange={handleDropdownChange} value={selectedValue}>
+          {dropdownValues.map(value => (
+            <option key={value} value={value}>
+              n = {value}
+            </option>
+          ))}
+        </select>
+      </div>
+      <Map className={styles.homeMap} center={DEFAULT_CENTER} zoom={6} minZoom={0} maxZoom={14}>
         {({ TileLayer, Marker, Popup }: { TileLayer: any; Marker: any; Popup: any }) => (
           <>
             <TileLayer
-              url="http://fjord:9000/stills/1200000/{z}/{x}/{y}.png"
+              url={`http://fjord:9000/stills/${selectedValue}/{z}/{x}/{y}.png`}
               tileSize={256}
             />
-            <TileLayer
+            {/* <TileLayer
               url="http://fjord:9000/debug/{z}/{x}/{y}.png"
               tileSize={256}
-            />
+            /> */}
             <Marker position={DEFAULT_CENTER} />
           </>
         )}
