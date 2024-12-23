@@ -2,6 +2,7 @@ import Link from "next/link";
 
 import { LatestPost } from "~/app/_components/post";
 import { api, HydrateClient } from "~/trpc/server";
+import Map from "~/app/_components/map";
 
 export default async function Home() {
   const hello = await api.post.hello({ text: "from tRPC" });
@@ -10,14 +11,15 @@ export default async function Home() {
 
   return (
     <HydrateClient>
-      <main className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#2e026d] to-[#15162c] text-white">
-        <div className="container flex flex-col items-center justify-center gap-12 px-4 py-16">
-          <div className="flex flex-col items-center gap-2">
+      <main className="">
+        <div className="h-full h-screen border-indigo-700 bg-indigo-100">
+          <Map></Map>
+          {/* <div className="flex flex-col items-center gap-2">
             <p className="text-2xl text-white">
               {hello ? hello.greeting : "Loading tRPC query..."}
             </p>
-          </div>
-          <LatestPost />
+          </div> */}
+          {/* <LatestPost /> */}
         </div>
       </main>
     </HydrateClient>
