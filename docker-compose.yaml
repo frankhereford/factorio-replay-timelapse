@@ -8,18 +8,8 @@ services:
     ports:
       - "9000:5000"
     volumes:
-      - /mnt/ceph/media/factorio/chunk-screenshots:/app/static:ro
+      - /mnt/ceph/media/factorio/linux-script-output/chunk-screenshots:/app/static:ro
       - ./file_service:/app
-
-  tiler:
-    build: tiler
-    environment:
-      - FOO=bar
-    volumes:
-      - /mnt/ceph/media/factorio/chunk-screenshots:/app/static:ro
-      - /mnt/ceph/media/factorio/web-tiles:/app/web-tiles
-      - ./tiler:/app
-    command: ["python", "app.py", "task"]
 
   redis:
     image: "redis:latest"
