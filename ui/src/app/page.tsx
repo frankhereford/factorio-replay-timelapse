@@ -18,11 +18,22 @@ export default function HomePage() {
     setSelectedValue(Number(event.target.value));
   };
 
+  const handleIncrement = () => {
+    setSelectedValue(prev => Math.min(prev + 30000, 1200000));
+  };
+
+  const handleDecrement = () => {
+    setSelectedValue(prev => Math.max(prev - 30000, 0));
+  };
+
   const dropdownValues = Array.from({ length: 41 }, (_, i) => i * 30000);
 
   return (
     <div className={styles.mapContainer}>
       <div className={styles.dropdownContainer}>
+        <button onClick={handleDecrement} disabled={selectedValue === 0}>
+          &uarr;
+        </button>
         <select onChange={handleDropdownChange} value={selectedValue}>
           {dropdownValues.map(value => (
             <option key={value} value={value}>
@@ -30,6 +41,9 @@ export default function HomePage() {
             </option>
           ))}
         </select>
+        <button onClick={handleIncrement} disabled={selectedValue === 1200000}>
+          &darr;
+        </button>
       </div>
       <Map className={styles.homeMap} center={DEFAULT_CENTER} zoom={6} minZoom={0} maxZoom={14}>
         {({ TileLayer, Marker, Popup }: { TileLayer: any; Marker: any; Popup: any }) => (
