@@ -73,10 +73,10 @@ def debug_tile(zoom, x, y):
     cached_image = redis_client.get(cache_key)
 
     if cached_image:
-        logging.debug(f'Cache hit 🎉 for key: {cache_key}')
+        logging.info(f'Cache hit 🎉 for key: {cache_key}')
         buffer = io.BytesIO(base64.b64decode(cached_image))
     else:
-        logging.debug(f'Cache miss ❌ for key: {cache_key}')
+        logging.info(f'Cache miss ❌ for key: {cache_key}')
         buffer = generate_debug_tile(label, zoom, x, y)
         redis_client.set(cache_key, base64.b64encode(buffer.getvalue()))
 
@@ -90,11 +90,11 @@ def generate_still_tile(tick, zoom, x, y):
     base_zoom = 7
 
     if cached_image:
-        logging.debug(f'Cache hit 🎉 for key: {cache_key}')
+        logging.info(f'Cache hit 🎉 for key: {cache_key}')
         buffer = io.BytesIO(base64.b64decode(cached_image))
         return buffer
     else:
-        logging.debug(f'Cache miss ❌ for key: {cache_key}')
+        logging.info(f'Cache miss ❌ for key: {cache_key}')
         if zoom > (base_zoom + 2):
             logging.debug(f'Zoom level: {zoom} is greater than base_zoom + 2, recursively generating image')
             # Calculate the coordinates for the tile at the previous zoom level
@@ -250,10 +250,10 @@ def still_tile(tick, zoom, x, y):
     cached_image = redis_client.get(cache_key)
 
     if cached_image:
-        logging.debug(f'Cache hit 🎉 for key: {cache_key}')
+        logging.info(f'Cache hit 🎉 for key: {cache_key}')
         buffer = io.BytesIO(base64.b64decode(cached_image))
     else:
-        logging.debug(f'Cache miss ❌ for key: {cache_key}')
+        logging.info(f'Cache miss ❌ for key: {cache_key}')
         buffer = generate_still_tile(tick, zoom, x, y)
         redis_client.set(cache_key, base64.b64encode(buffer.getvalue()))
 
