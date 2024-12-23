@@ -32,7 +32,7 @@ const TickPicker: React.FC<TickPickerProps> = ({ ticks, selectedTick, onTickChan
     const minutes = Math.floor((totalSeconds % 3600) / 60);
     const seconds = Math.floor(totalSeconds % 60);
 
-    return `${days}d ${hours}h ${minutes}m ${seconds.toFixed(2)}s`;
+    return `${days}d ${hours}h ${minutes}m ${seconds}s`;
   };
 
   return (
