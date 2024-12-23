@@ -10,7 +10,7 @@ import numpy as np
 app = Flask(__name__)
 
 # Configure logging
-logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(level=logging.INFO)
 
 # Connect to Redis
 redis_client = redis.Redis(host='redis', port=6379)
@@ -187,7 +187,7 @@ def generate_still_tile(tick, zoom, x, y):
             
             # Debugging: Check if the file exists
             if not os.path.exists(source_image_path):
-                logging.error(f'File not found: {source_image_path}')
+                # logging.error(f'File not found: {source_image_path}')
                 # Create a transparent image if the file is missing
                 source_image = Image.new('RGBA', (1024, 1024), (0, 0, 0, 0))
             else:

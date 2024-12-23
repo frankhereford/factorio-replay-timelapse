@@ -11,6 +11,9 @@ import styles from '../styles/Home.module.scss';
 
 const DEFAULT_CENTER = [0,0];
 
+const jump = 15000;
+const end = 1200000;
+
 export default function HomePage() {
   const [selectedValue, setSelectedValue] = useState(0);
 
@@ -19,14 +22,14 @@ export default function HomePage() {
   };
 
   const handleIncrement = () => {
-    setSelectedValue(prev => Math.min(prev + 30000, 1200000));
+    setSelectedValue(prev => Math.min(prev + jump, end));
   };
 
   const handleDecrement = () => {
-    setSelectedValue(prev => Math.max(prev - 30000, 0));
+    setSelectedValue(prev => Math.max(prev - jump, 0));
   };
 
-  const dropdownValues = Array.from({ length: 41 }, (_, i) => i * 30000);
+  const dropdownValues = Array.from({ length: 41 }, (_, i) => i * jump);
 
   return (
     <div className={styles.mapContainer}>
@@ -41,7 +44,7 @@ export default function HomePage() {
             </option>
           ))}
         </select>
-        <button onClick={handleIncrement} disabled={selectedValue === 1200000}>
+        <button onClick={handleIncrement} disabled={selectedValue === end}>
           &darr;
         </button>
       </div>
