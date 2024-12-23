@@ -13,7 +13,7 @@ app = Flask(__name__)
 logging.basicConfig(level=logging.INFO)
 
 # Connect to Redis
-redis_client = redis.Redis(host='redis', port=6379)
+redis_client = redis.Redis(host='10.10.10.1', port=6379)
 
 def generate_debug_tile(label, zoom, x, y):
     # Create a 256x256 transparent image
