@@ -52,7 +52,7 @@ export default function HomePage() {
         {({ TileLayer, Marker, Popup }: { TileLayer: any; Marker: any; Popup: any }) => (
           <>
             <TileLayer
-              url={`http://fjord:8123/stills/${selectedValue}/{z}/{x}/{y}.png`}
+              url={`http://fjord:9000/stills/${selectedValue}/{z}/{x}/{y}.png`}
               tileSize={256}
             />
             {/* <TileLayer
