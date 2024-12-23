@@ -11,28 +11,17 @@ export default async function Home() {
 
   return (
     <HydrateClient>
-      <main className="">
-        <div className="h-full h-screen border-indigo-700 bg-indigo-100">
+      <main>
           <Map></Map>
-          {/* <div className="flex flex-col items-center gap-2">
-            <p className="text-2xl text-white">
-              {hello ? hello.greeting : "Loading tRPC query..."}
-            </p>
-          </div> */}
-          {/* <LatestPost /> */}
-        </div>
-      </main>
+     </main>
     </HydrateClient>
   );
 }
 
-
-//   return (
-//     <HydrateClient>
-//       <main>
-//         <div id="map" className="h-full h-screen border-indigo-700 bg-indigo-100">
-//         </div>
-//       </main>
-//     </HydrateClient>
-//   );
-// }
+          // <div className="flex flex-col items-center gap-2">
+          //   <p className="text-2xl text-white">
+          //     {hello ? hello.greeting : "Loading tRPC query..."}
+          //   </p>
+          // </div>
+          // <LatestPost />
+ 
