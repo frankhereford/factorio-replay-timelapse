@@ -29,7 +29,7 @@ export default function HomePage() {
     setSelectedValue(prev => Math.max(prev - jump, 0));
   };
 
-  const dropdownValues = Array.from({ length: 41 }, (_, i) => i * jump);
+  const dropdownValues = Array.from({ length: 82 }, (_, i) => i * jump);
 
   return (
     <div className={styles.mapContainer}>
