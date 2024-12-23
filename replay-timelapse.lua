@@ -42,15 +42,6 @@ local function screenshot_tile(surface, tick, z, x, y)
     }
 end
 
-            -- local x, y = chunk_to_slippy(chunk.x, chunk.y)
-            -- local key = x .. "," .. y
-            -- if not processed_chunks[key] then
-            --     log("Processing chunk at: " .. chunk.x .. ", " .. chunk.y)
-            --     -- screenshot_tile(surface, event.tick, config.zoom_level, x, y)
-            --     processed_chunks[key] = true
-            -- end
-
--- ...existing code...
 
 local function run()
     script.on_nth_tick(config.ticks_per_screenshot, function(event)
