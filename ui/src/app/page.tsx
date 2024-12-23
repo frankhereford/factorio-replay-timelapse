@@ -1,65 +1,37 @@
-'use client';
-
-import React, { useState } from 'react';
-import Layout from '~/components/Layout';
-import Section from '~/components/Section';
-import Container from '~/components/Container';
-import Map from '~/components/Map';
-import Button from '~/components/Button';
-
-import styles from '../styles/Home.module.scss';
-
-const DEFAULT_CENTER = [0,0];
+import Link from "next/link";
 
 export default function HomePage() {
-  const [selectedValue, setSelectedValue] = useState(0);
-
-  const handleDropdownChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    setSelectedValue(Number(event.target.value));
-  };
-
-  const handleIncrement = () => {
-    setSelectedValue(prev => Math.min(prev + 30000, 1200000));
-  };
-
-  const handleDecrement = () => {
-    setSelectedValue(prev => Math.max(prev - 30000, 0));
-  };
-
-  const dropdownValues = Array.from({ length: 41 }, (_, i) => i * 30000);
-
   return (
-    <div className={styles.mapContainer}>
-      <div className={styles.dropdownContainer}>
-        <button onClick={handleDecrement} disabled={selectedValue === 0}>
-          &uarr;
-        </button>
-        <select onChange={handleDropdownChange} value={selectedValue}>
-          {dropdownValues.map(value => (
-            <option key={value} value={value}>
-              n = {value}
-            </option>
-          ))}
-        </select>
-        <button onClick={handleIncrement} disabled={selectedValue === 1200000}>
-          &darr;
-        </button>
+    <main className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#2e026d] to-[#15162c] text-white">
+      <div className="container flex flex-col items-center justify-center gap-12 px-4 py-16">
+        <h1 className="text-5xl font-extrabold tracking-tight text-white sm:text-[5rem]">
+          Create <span className="text-[hsl(280,100%,70%)]">T3</span> App
+        </h1>
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:gap-8">
+          <Link
+            className="flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20"
+            href="https://create.t3.gg/en/usage/first-steps"
+            target="_blank"
+          >
+            <h3 className="text-2xl font-bold">First Steps →</h3>
+            <div className="text-lg">
+              Just the basics - Everything you need to know to set up your
+              database and authentication.
+            </div>
+          </Link>
+          <Link
+            className="flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20"
+            href="https://create.t3.gg/en/introduction"
+            target="_blank"
+          >
+            <h3 className="text-2xl font-bold">Documentation →</h3>
+            <div className="text-lg">
+              Learn more about Create T3 App, the libraries it uses, and how to
+              deploy it.
+            </div>
+          </Link>
+        </div>
       </div>
-      <Map className={styles.homeMap} center={DEFAULT_CENTER} zoom={6} minZoom={0} maxZoom={14}>
-        {({ TileLayer, Marker, Popup }: { TileLayer: any; Marker: any; Popup: any }) => (
-          <>
-            <TileLayer
-              url={`http://fjord:9000/stills/${selectedValue}/{z}/{x}/{y}.png`}
-              tileSize={256}
-            />
-            {/* <TileLayer
-              url="http://fjord:9000/debug/{z}/{x}/{y}.png"
-              tileSize={256}
-            /> */}
-            <Marker position={DEFAULT_CENTER} />
-          </>
-        )}
-      </Map>
-    </div>
+    </main>
   );
 }
