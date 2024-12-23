@@ -87,7 +87,7 @@ def generate_still_tile(tick, zoom, x, y):
     cache_key = f'{label}:{tick}:{zoom}:{x}:{y}'
     cached_image = redis_client.get(cache_key)
 
-    base_zoom = 6
+    base_zoom = 7
 
     if cached_image:
         logging.debug(f'Cache hit 🎉 for key: {cache_key}')
@@ -96,9 +96,32 @@ def generate_still_tile(tick, zoom, x, y):
     else:
         logging.debug(f'Cache miss ❌ for key: {cache_key}')
         if zoom > (base_zoom + 2):
-            logging.debug(f'Zoom level: {zoom} is greater than base_zoom + 2, returning black 256x256 PNG buffer')
-            # Create a black 256x256 PNG image
-            img = Image.new('RGB', (256, 256), color='black')
+            logging.debug(f'Zoom level: {zoom} is greater than base_zoom + 2, recursively generating image')
+            # Calculate the coordinates for the tile at the previous zoom level
+            prev_zoom = zoom - 1
+            tile_x = x // 2
+            tile_y = y // 2
+            logging.debug(f'Previous zoom level: {prev_zoom}, Tile coordinates: ({tile_x}, {tile_y})')
+            
+            try:
+                tile_buffer = generate_still_tile(tick, prev_zoom, tile_x, tile_y)
+                tile_image = Image.open(tile_buffer)
+            except Exception as e:
+                logging.error(f'Error opening tile image: {e}')
+                # Create a black image if the file is missing
+                tile_image = Image.new('RGB', (256, 256), color='black')
+            
+            # Calculate the box to crop the image for the current zoom level
+            left = (x % 2) * 128
+            upper = (y % 2) * 128
+            right = left + 128
+            lower = upper + 128
+            img = tile_image.crop((left, upper, right, lower))
+            
+            # Resize the cropped image to 256x256
+            img = img.resize((256, 256))
+            
+            # Save the image to a bytes buffer
             buf = io.BytesIO()
             img.save(buf, format='PNG')
             buf.seek(0)
