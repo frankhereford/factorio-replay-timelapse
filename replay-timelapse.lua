@@ -48,8 +48,6 @@ local function process_chunks_or_entities(bounds, surface, event, config)
     for x = bounds.min_x, bounds.max_x do
         for y = bounds.min_y, bounds.max_y do
             log("Iterating chunk at: " .. x .. ", " .. y)
-            -- Add your processing code here
-            -- For example, you can call screenshot_tile function
             local slippy_x, slippy_y = chunk_to_slippy(x, y)
             screenshot_tile(surface, event.tick, config.zoom_level, slippy_x, slippy_y)
         end
@@ -58,18 +56,11 @@ end
 
 local function run()
     script.on_nth_tick(config.ticks_per_screenshot, function(event)
-        -- local player = game.players[1] -- Assuming we are using the first player
-        -- local building_bounds, err = get_player_building_bounds(player)
-        -- -- if not building_bounds then
-        -- --     log(err)
-        -- --     return
-        -- -- end
-        -- local chunks = {
-        --     min_x = building_bounds.min_x,
-        --     min_y = building_bounds.min_y,
-        --     max_x = building_bounds.max_x,
-        --     max_y = building_bounds.max_y
-        -- }
+
+        if event.tick <= 1753200 then
+            return
+        end
+
     local entities = {
         min_x = math.huge,
         min_y = math.huge,
