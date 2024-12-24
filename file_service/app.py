@@ -87,7 +87,7 @@ def generate_still_tile(tick, zoom, x, y):
     cache_key = f'{label}:{tick}:{zoom}:{x}:{y}'
     cached_image = redis_client.get(cache_key)
 
-    base_zoom = 7
+    base_zoom = 6
 
     if cached_image:
         logging.info(f'Cache hit 🎉 for key: {cache_key}')
