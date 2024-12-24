@@ -49,9 +49,36 @@ const TickPicker: React.FC<TickPickerProps> = ({ ticks, selectedTick, onTickChan
     }
   };
 
+  const handlePrevious15Ticks = () => {
+    const currentIndex = ticks.indexOf(selectedTick);
+    if (currentIndex >= 15) {
+      const previousTick = ticks[currentIndex - 15];
+      if (previousTick !== undefined) {
+        onTickChange(previousTick);
+      }
+    }
+  };
+
+  const handleNext15Ticks = () => {
+    const currentIndex = ticks.indexOf(selectedTick);
+    if (currentIndex <= ticks.length - 16) {
+      const nextTick = ticks[currentIndex + 15];
+      if (nextTick !== undefined) {
+        onTickChange(nextTick);
+      }
+    }
+  };
+
   return (
     <div className="absolute top-10 right-10 w-1/3 bg-white bg-opacity-50 backdrop-blur-sm p-4 rounded-lg shadow-lg">
       <div className="p-0 flex items-center">
+        <button
+          onClick={handlePrevious15Ticks}
+          disabled={ticks.indexOf(selectedTick) < 15}
+          className="mr-2 p-2 bg-gray-200 rounded disabled:bg-gray-400"
+        >
+          &larr;&larr;
+        </button>
         <button
           onClick={handlePreviousTick}
           disabled={ticks.indexOf(selectedTick) === 0}
@@ -66,6 +93,13 @@ const TickPicker: React.FC<TickPickerProps> = ({ ticks, selectedTick, onTickChan
           className="ml-2 p-2 bg-gray-200 rounded disabled:bg-gray-400"
         >
           &rarr;
+        </button>
+        <button
+          onClick={handleNext15Ticks}
+          disabled={ticks.indexOf(selectedTick) > ticks.length - 16}
+          className="ml-2 p-2 bg-gray-200 rounded disabled:bg-gray-400"
+        >
+          &rarr;&rarr;
         </button>
       </div>
       <div className="p-0">
