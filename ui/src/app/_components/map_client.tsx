@@ -9,7 +9,7 @@ interface MapClientProps {
 }
 
 export default function MapClient({ ticks }: MapClientProps) {
-  const [tick, setTick] = useState(60000);
+  const [tick, setTick] = useState(0);
 
   useEffect(() => {
     console.log("Ticks prop changed:", ticks);
