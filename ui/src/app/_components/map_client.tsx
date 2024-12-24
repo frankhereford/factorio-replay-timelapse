@@ -34,8 +34,8 @@ export default function MapClient({ ticks: initialTicks }: MapClientProps) {
 
   return (
     <>
-      <TickPicker ticks={ticks} selectedTick={tick} onTickChange={setTick} />
       <LeafletMap tick={tick}></LeafletMap>
+      <TickPicker ticks={ticks} selectedTick={tick} onTickChange={setTick} />
     </>
   );
 }
