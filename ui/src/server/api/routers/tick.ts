@@ -13,6 +13,7 @@ export const tickRouter = createTRPCRouter({
     const directories = fs.readdirSync(rawScreenshotsDir, { withFileTypes: true })
       .filter(dirent => dirent.isDirectory() && /^\d+$/.test(dirent.name))
       .map(dirent => parseInt(dirent.name, 10))
+      .filter(value => value % (60 * 60) === 0)
       .sort((a, b) => a - b);
 
     return directories;
