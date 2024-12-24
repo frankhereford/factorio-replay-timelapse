@@ -28,17 +28,17 @@ const TickPicker: React.FC<TickPickerProps> = ({ ticks, selectedTick, onTickChan
   };
 
   return (
-    <div className="p-4">
-      <label className="block text-sm font-medium text-gray-700">Select Tick:</label>
+    <div className="p-2">
+      {/* <label className="block text-sm font-medium text-gray-700">Select Tick:</label> */}
       <input
         type="range"
         min={0}
         max={ticks.length - 1}
         value={ticks.indexOf(selectedTick)}
         onChange={handleSliderChange}
-        className="w-full mt-2"
+        className="w-full mt-1"
       />
-      <div className="mt-2 text-center">{formatTick(selectedTick)}</div>
+      <div className="mt-1 text-center">{formatTick(selectedTick)}</div>
     </div>
   );
 };
