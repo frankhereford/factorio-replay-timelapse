@@ -33,9 +33,11 @@ export default function MapClient({ ticks: initialTicks }: MapClientProps) {
   }, [refetchAvailable]);
 
   return (
-    <>
-      <LeafletMap tick={tick}></LeafletMap>
-      <TickPicker ticks={ticks} selectedTick={tick} onTickChange={setTick} />
-    </>
+    <div className="relative h-screen">
+      <LeafletMap tick={tick} />
+      <div className="absolute bottom-10 left-1/2 transform -translate-x-1/2 w-4/5 bg-white p-4 rounded-lg shadow-lg">
+        <TickPicker ticks={ticks} selectedTick={tick} onTickChange={setTick} />
+      </div>
+    </div>
   );
 }
