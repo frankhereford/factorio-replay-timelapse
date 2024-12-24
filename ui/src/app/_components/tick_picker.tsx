@@ -29,24 +29,56 @@ const TickPicker: React.FC<TickPickerProps> = ({ ticks, selectedTick, onTickChan
     }
   };
 
-  return (
-      <div className="absolute top-10 right-10 w-1/3 bg-white bg-opacity-50 backdrop-blur-sm p-4 rounded-lg shadow-lg">
-        <div className="p-0">
-          <Scrubber
-            min={0}
-            max={ticks.length - 1}
-            value={ticks.indexOf(selectedTick)}
-            onScrubChange={handleScrubChange}
-            // tooltip={{
-            //   enabledOnHover: true,
-            //   enabledOnScrub: true,
-            //   formatString: (value: number) => formatTick(ticks[Math.round(value)] || 0),
-            // }}
-            className="w-full mt-2"
-          />
-          <div className="mt-1 text-center">{formatTick(selectedTick)}</div>
-        </div>
-      </div>
-    );
+  const handlePreviousTick = () => {
+    const currentIndex = ticks.indexOf(selectedTick);
+    if (currentIndex > 0) {
+      const previousTick = ticks[currentIndex - 1];
+      if (previousTick !== undefined) {
+        onTickChange(previousTick);
+      }
+    }
   };
+
+  const handleNextTick = () => {
+    const currentIndex = ticks.indexOf(selectedTick);
+    if (currentIndex < ticks.length - 1) {
+      const nextTick = ticks[currentIndex + 1];
+      if (nextTick !== undefined) {
+        onTickChange(nextTick);
+      }
+    }
+  };
+
+  return (
+    <div className="absolute top-10 right-10 w-1/3 bg-white bg-opacity-50 backdrop-blur-sm p-4 rounded-lg shadow-lg">
+      <div className="p-0 flex items-center">
+        <button
+          onClick={handlePreviousTick}
+          disabled={ticks.indexOf(selectedTick) === 0}
+          className="mr-2 p-2 bg-gray-200 rounded disabled:bg-gray-400"
+        >
+          &larr;
+        </button>
+        <div className="flex-grow text-center">{formatTick(selectedTick)}</div>
+        <button
+          onClick={handleNextTick}
+          disabled={ticks.indexOf(selectedTick) === ticks.length - 1}
+          className="ml-2 p-2 bg-gray-200 rounded disabled:bg-gray-400"
+        >
+          &rarr;
+        </button>
+      </div>
+      <div className="p-0">
+        <Scrubber
+          min={0}
+          max={ticks.length - 1}
+          value={ticks.indexOf(selectedTick)}
+          onScrubChange={handleScrubChange}
+          className="w-full mt-2"
+        />
+      </div>
+    </div>
+  );
+};
+
 export default TickPicker;
