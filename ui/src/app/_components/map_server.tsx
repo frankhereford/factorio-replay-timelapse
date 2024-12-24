@@ -8,7 +8,7 @@ export default async function MapServer() {
   return (
     <>
       <HydrateClient>
-        <MapClient ticks={ticks} />;
+        <MapClient ticks={ticks} />
       </HydrateClient>
     </>
   );
