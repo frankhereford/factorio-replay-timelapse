@@ -9,15 +9,15 @@ local config = {
 }
 
 
-local function ensure_directory(path)
-    helpers.write_file(path .. "/.chunk-screenshots", "", false)
-end
+-- local function ensure_directory(path)
+--     helpers.write_file(path .. "/.chunk-screenshots", "", false)
+-- end
 
 local function get_slippy_map_path(tick, z, x, y, offset)
     offset = offset or 128
     local offset_x = x + offset
     local offset_y = y + offset
-    return string.format("%s/%d/%d", config.base_directory, tick, offset_x),
+    return string.format("%d/%d", tick, offset_x),
            string.format("%d.png", offset_y)
 end
 
@@ -25,17 +25,19 @@ local function chunk_to_slippy(chunk_x, chunk_y)
     return chunk_x, chunk_y
 end
 
-local function screenshot_tile(surface, tick, z, x, y)
+local function screenshot_tile(surface, surface_index, tick, z, x, y)
     local center_x = (x * 32) + 16  -- 1 chunk * 32 tiles per chunk
     local center_y = (y * 32) + 16  -- 1 chunk * 32 tiles per chunk
     local dir, filename = get_slippy_map_path(tick, z, x, y, 0)
-    ensure_directory(dir)
+    -- ensure_directory(dir)
+    local path = surface_index .. "/" .. dir .. "/" .. filename
+    log("Using path: " .. path)
     game.take_screenshot{
         surface = surface,
         position = {x = center_x, y = center_y},
         resolution = {config.tile_size * 32, config.tile_size * 32},
         zoom = 1,  -- Adjust to match "slippy" tile scale
-        path = dir .. "/" .. filename,
+        path = path,
         show_entity_info = config.show_entity_info,
         anti_alias = config.anti_alias,
         quality = 80,
@@ -44,12 +46,12 @@ local function screenshot_tile(surface, tick, z, x, y)
     }
 end
 
-local function process_chunks_or_entities(bounds, surface, event, config)
+local function process_chunks_or_entities(bounds, surface, surface_index, event, config)
     for x = bounds.min_x, bounds.max_x do
         for y = bounds.min_y, bounds.max_y do
             log("Iterating chunk at: " .. x .. ", " .. y)
             local slippy_x, slippy_y = chunk_to_slippy(x, y)
-            screenshot_tile(surface, event.tick, config.zoom_level, slippy_x, slippy_y)
+            screenshot_tile(surface, surface_index, event.tick, config.zoom_level, slippy_x, slippy_y)
         end
     end
 end
@@ -67,7 +69,7 @@ local function run()
         local position_in_family = tick % ticks_per_screenshot
     
         if position_in_family == 0 or position_in_family == 15 or position_in_family == 30 or position_in_family == 45 then
-            for _, surface in pairs(game.surfaces) do
+            for surface_index, surface in pairs(game.surfaces) do
                 local entities = {
                     min_x = math.huge,
                     min_y = math.huge,
@@ -136,7 +138,7 @@ local function run()
                 log("Chunks boundaries: min_x=" .. chunks.min_x .. ", min_y=" .. chunks.min_y .. ", max_x=" .. chunks.max_x .. ", max_y=" .. chunks.max_y)
     
                 -- process_chunks_or_entities(chunks, surface, event, config)
-                process_chunks_or_entities(entities, surface, event, config)
+                process_chunks_or_entities(entities, surface, surface_index, event, config)
             end
         end
     end)
