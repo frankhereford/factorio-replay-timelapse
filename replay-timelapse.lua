@@ -5,7 +5,7 @@ local config = {
     anti_alias = true,
     show_entity_info = true,
     -- ticks_per_screenshot = 60*60*10
-    ticks_per_screenshot = 60*60,
+    ticks_per_screenshot = 5*60*60,
 }
 
 
@@ -31,7 +31,7 @@ local function screenshot_tile(surface, surface_index, tick, z, x, y)
     local dir, filename = get_slippy_map_path(tick, z, x, y, 0)
     -- ensure_directory(dir)
     local path = surface_index .. "/" .. dir .. "/" .. filename
-    log("Using path: " .. path)
+    -- log("Using path: " .. path)
     game.take_screenshot{
         surface = surface,
         position = {x = center_x, y = center_y},
@@ -49,7 +49,7 @@ end
 local function process_chunks_or_entities(bounds, surface, surface_index, event, config)
     for x = bounds.min_x, bounds.max_x do
         for y = bounds.min_y, bounds.max_y do
-            log("Iterating chunk at: " .. x .. ", " .. y)
+            -- log("Iterating chunk at: " .. x .. ", " .. y)
             local slippy_x, slippy_y = chunk_to_slippy(x, y)
             screenshot_tile(surface, surface_index, event.tick, config.zoom_level, slippy_x, slippy_y)
         end
@@ -57,7 +57,7 @@ local function process_chunks_or_entities(bounds, surface, surface_index, event,
 end
 
 local function run()
-    script.on_nth_tick(15, function(event)
+    script.on_nth_tick(60 * 30, function(event)
         -- if event.tick <= 1753200 then
         --     return
         -- end
@@ -68,7 +68,8 @@ local function run()
         -- Determine the position within the "family" of screenshots
         local position_in_family = tick % ticks_per_screenshot
     
-        if position_in_family == 0 or position_in_family == 15 or position_in_family == 30 or position_in_family == 45 then
+        -- if position_in_family == 0 or position_in_family == 15 or position_in_family == 30 or position_in_family == 45 then
+        if true then
             for surface_index, surface in pairs(game.surfaces) do
                 local entities = {
                     min_x = math.huge,
@@ -81,8 +82,8 @@ local function run()
                 local entities_list = player.surface.find_entities_filtered({force = player.force})
                 for _, entity in pairs(entities_list) do
                     local selection_box = entity.selection_box
-                    log("Entity: " .. entity.name)
-                    log("Selection box: " .. serpent.line(selection_box))
+                    -- log("Entity: " .. entity.name)
+                    -- log("Selection box: " .. serpent.line(selection_box))
     
                     -- Update bounding box
                     entities.min_x = math.min(entities.min_x, selection_box.left_top.x)
