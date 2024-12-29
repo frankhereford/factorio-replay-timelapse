@@ -82,9 +82,9 @@ def debug_tile(zoom, x, y):
 
     return send_file(buffer, mimetype='image/png')
 
-def generate_still_tile(tick, zoom, x, y):
+def generate_still_tile(surface, tick, zoom, x, y):
     label = 'stills'
-    cache_key = f'{label}:{tick}:{zoom}:{x}:{y}'
+    cache_key = f'{surface}:{label}:{tick}:{zoom}:{x}:{y}'
     cached_image = redis_client.get(cache_key)
 
     base_zoom = 6
@@ -104,7 +104,7 @@ def generate_still_tile(tick, zoom, x, y):
             logging.debug(f'Previous zoom level: {prev_zoom}, Tile coordinates: ({tile_x}, {tile_y})')
             
             try:
-                tile_buffer = generate_still_tile(tick, prev_zoom, tile_x, tile_y)
+                tile_buffer = generate_still_tile(surface, tick, prev_zoom, tile_x, tile_y)
                 tile_image = Image.open(tile_buffer)
             except Exception as e:
                 logging.error(f'Error opening tile image: {e}')
@@ -138,7 +138,7 @@ def generate_still_tile(tick, zoom, x, y):
                     tile_y = y * 2 + dy
                     logging.debug(f'Next zoom level: {next_zoom}, Tile coordinates: ({tile_x}, {tile_y})')
                     try:
-                        tile_buffer = generate_still_tile(tick, next_zoom, tile_x, tile_y)
+                        tile_buffer = generate_still_tile(surface, tick, next_zoom, tile_x, tile_y)
                         tile_image = Image.open(tile_buffer)
                     except Exception as e:
                         logging.error(f'Error opening tile image: {e}')
@@ -177,7 +177,7 @@ def generate_still_tile(tick, zoom, x, y):
             logging.debug(f'Transformed coordinates: ({transformed_x}, {transformed_y})')
             
             # Determine the source image path
-            source_dir = f'/app/static/nauvis/{tick}'
+            source_dir = f'/app/static/{surface}/{tick}'
             if zoom == base_zoom:
                 source_image_path = os.path.join(source_dir, f'{transformed_x}/{transformed_y}.png')
             elif zoom == (base_zoom + 1):
@@ -245,10 +245,13 @@ def generate_still_tile(tick, zoom, x, y):
     
     return buffer
     
-@app.route('/stills/<int:tick>/<int:zoom>/<int:x>/<int:y>.png')
-def still_tile(tick, zoom, x, y):
+@app.route('/stills/<string:surface>/<int:tick>/<int:zoom>/<int:x>/<int:y>.png')
+def still_tile(surface, tick, zoom, x, y):
+    # surface = 'nauvis'
+    print(f'Route hit: {surface}/{tick}/{zoom}/{x}/{y}') 
+    logging.info(f'Request for tile: {surface}/{tick}/{zoom}/{x}/{y}')
     label = 'stills'
-    cache_key = f'{label}:{tick}:{zoom}:{x}:{y}'
+    cache_key = f'{surface}:{label}:{tick}:{zoom}:{x}:{y}'
     cached_image = redis_client.get(cache_key)
 
     if cached_image:
@@ -256,7 +259,7 @@ def still_tile(tick, zoom, x, y):
         buffer = io.BytesIO(base64.b64decode(cached_image))
     else:
         logging.info(f'Cache miss ❌ for key: {cache_key}')
-        buffer = generate_still_tile(tick, zoom, x, y)
+        buffer = generate_still_tile(surface, tick, zoom, x, y)
         redis_client.set(cache_key, base64.b64encode(buffer.getvalue()))
 
     return send_file(buffer, mimetype='image/png')
