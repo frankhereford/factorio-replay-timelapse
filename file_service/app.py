@@ -177,13 +177,15 @@ def generate_still_tile(tick, zoom, x, y):
             logging.debug(f'Transformed coordinates: ({transformed_x}, {transformed_y})')
             
             # Determine the source image path
-            source_dir = f'/app/static/{tick}'
+            source_dir = f'/app/static/nauvis/{tick}'
             if zoom == base_zoom:
                 source_image_path = os.path.join(source_dir, f'{transformed_x}/{transformed_y}.png')
             elif zoom == (base_zoom + 1):
                 source_image_path = os.path.join(source_dir, f'{transformed_x // 2}/{transformed_y // 2}.png')
             elif zoom == (base_zoom + 2):
                 source_image_path = os.path.join(source_dir, f'{transformed_x // 4}/{transformed_y // 4}.png')
+
+            # print(f"source_image_path: {source_image_path}")
             
             # Debugging: Check if the file exists
             if not os.path.exists(source_image_path):
