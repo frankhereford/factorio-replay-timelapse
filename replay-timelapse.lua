@@ -58,9 +58,9 @@ end
 
 local function run()
     script.on_nth_tick(60 * 30, function(event)
-        -- if event.tick <= 1753200 then
-        --     return
-        -- end
+        if event.tick <= 3537000 then
+            return
+        end
     
         local tick = event.tick
         local ticks_per_screenshot = config.ticks_per_screenshot
