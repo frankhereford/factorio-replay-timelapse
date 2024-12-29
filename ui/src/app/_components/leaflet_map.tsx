@@ -11,6 +11,8 @@ interface LeafletMapProps {
 export default function LeafletMap({ tick }: LeafletMapProps) {
   const mapRef = useRef<L.Map | null>(null);
 
+  let surface = 'nauvis'
+
   useEffect(() => {
     if (!mapRef.current) {
       mapRef.current = L.map("map", {
@@ -19,7 +21,7 @@ export default function LeafletMap({ tick }: LeafletMapProps) {
       });
 
       L.tileLayer(
-        `http://fjord:8123/stills/${tick}/{z}/{x}/{y}.png`,
+        `http://fjord:8123/stills/${surface}/${tick}/{z}/{x}/{y}.png`,
         {
           tileSize: 256,
           minZoom: 1,
@@ -30,7 +32,7 @@ export default function LeafletMap({ tick }: LeafletMapProps) {
     } else {
       mapRef.current.eachLayer((layer) => {
         if (layer instanceof L.TileLayer) {
-          layer.setUrl(`http://fjord:8123/stills/${tick}/{z}/{x}/{y}.png`);
+          layer.setUrl(`http://fjord:8123/stills/${surface}/${tick}/{z}/{x}/{y}.png`);
         }
       });
     }
