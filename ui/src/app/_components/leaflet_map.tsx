@@ -6,12 +6,11 @@ import "leaflet/dist/leaflet.css";
 
 interface LeafletMapProps {
   tick: number;
+  surface: string;
 }
 
-export default function LeafletMap({ tick }: LeafletMapProps) {
+export default function LeafletMap({ tick, surface }: LeafletMapProps) {
   const mapRef = useRef<L.Map | null>(null);
-
-  let surface = 'nauvis'
 
   useEffect(() => {
     if (!mapRef.current) {
@@ -36,7 +35,7 @@ export default function LeafletMap({ tick }: LeafletMapProps) {
         }
       });
     }
-  }, [tick]);
+  }, [tick, surface]);
 
   return <div id="map" className="h-full h-screen border-indigo-700 bg-indigo-100 z-0"></div>;
 }
