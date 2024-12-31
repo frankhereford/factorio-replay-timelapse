@@ -1,5 +1,6 @@
 import { postRouter } from "~/server/api/routers/post";
 import { tickRouter } from "~/server/api/routers/tick";
+import { surfaceRouter } from "~/server/api/routers/surface";
 import { createCallerFactory, createTRPCRouter } from "~/server/api/trpc";
 
 /**
@@ -10,6 +11,7 @@ import { createCallerFactory, createTRPCRouter } from "~/server/api/trpc";
 export const appRouter = createTRPCRouter({
   post: postRouter,
   tick: tickRouter,
+  surface: surfaceRouter,
 });
 
 // export type definition of API
