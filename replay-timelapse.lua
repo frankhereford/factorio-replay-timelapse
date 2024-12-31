@@ -49,7 +49,7 @@ end
 local function process_chunks_or_entities(bounds, surface, surface_index, event, config)
     for x = bounds.min_x, bounds.max_x do
         for y = bounds.min_y, bounds.max_y do
-            -- log("Iterating chunk at: " .. x .. ", " .. y)
+            log("Iterating chunk at: " .. x .. ", " .. y)
             local slippy_x, slippy_y = chunk_to_slippy(x, y)
             screenshot_tile(surface, surface_index, event.tick, config.zoom_level, slippy_x, slippy_y)
         end
@@ -58,9 +58,9 @@ end
 
 local function run()
     script.on_nth_tick(60 * 30, function(event)
-        if event.tick <= 3537000 then
-            return
-        end
+        -- if event.tick <= 3537000 then
+        --     return
+        -- end
     
         local tick = event.tick
         local ticks_per_screenshot = config.ticks_per_screenshot
@@ -79,10 +79,10 @@ local function run()
                 }
     
                 player = game.get_player(1)
-                local entities_list = player.surface.find_entities_filtered({force = player.force})
+                local entities_list = surface.find_entities_filtered({force = player.force})
                 for _, entity in pairs(entities_list) do
                     local selection_box = entity.selection_box
-                    -- log("Entity: " .. entity.name)
+                    log("Entity: " .. entity.name)
                     -- log("Selection box: " .. serpent.line(selection_box))
     
                     -- Update bounding box
